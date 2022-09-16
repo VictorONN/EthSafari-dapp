@@ -33,8 +33,8 @@ export default function Home() {
   // loading is set to true when we are waiting for a transaction to get mined
   const [loading, setLoading] = useState(false);
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
-  const [provider, setProvider] = useState();
-  const [library, setLibrary] = useState();
+  // const [provider, setProvider] = useState();
+  // const [library, setLibrary] = useState();
 
   /** Variables to keep track of swap functionality */
   // Amount of DAI that the user wants to invest
@@ -47,6 +47,26 @@ export default function Home() {
     providerOptions, // required
   });
 
+  const [provider, setProvider] = useState();
+  const [library, setLibrary] = useState();
+  const [account, setAccount] = useState();
+  const [network, setNetwork] = useState();
+
+  const connectWallet = async () => {
+    try {
+      const provider = await web3Modal.connect();
+      const library = new ethers.providers.Web3Provider(provider);
+      const accounts = await library.listAccounts();
+      const network = await library.getNetwork();
+      setProvider(provider);
+      setLibrary(library);
+      if (accounts) setAccount(accounts[0]);
+      setNetwork(network);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     web3ModalRef.current = new Web3Modal({
       // network: "mumbai",
@@ -58,18 +78,18 @@ export default function Home() {
   /**
    * connectWallet: Connects the Coinbase wallet
    */
-  const connectWallet = async () => {
-    try {
-      const provider = await web3Modal.connect();
-      const library = new ethers.providers.Web3Provider(provider);
-      // await getProviderOrSigner();
-      setProvider(provider);
-      setWalletConnected(true);
-      setLibrary(library);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const connectWallet = async () => {
+  //   try {
+  //     const provider = await web3Modal.connect();
+  //     const library = new ethers.providers.Web3Provider(provider);
+  //     // await getProviderOrSigner();
+  //     setProvider(provider);
+  //     setWalletConnected(true);
+  //     setLibrary(library);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   /**
    * @param {*} needSigner - True if you need the signer, default false
