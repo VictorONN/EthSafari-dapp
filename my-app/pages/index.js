@@ -2,6 +2,7 @@ import Head from "next/head";
 import Web3Modal from "web3modal";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 import WalletConnect from "@walletconnect/web3-provider";
+import { ethers } from "ethers";
 import React, { useEffect, useRef, useState } from "react";
 import { abi, FINALPROJECT_CONTRACT_ADDRESS } from "../constants";
 import styles from "../styles/Home.module.css";
@@ -14,7 +15,17 @@ export const providerOptions = {
       infuraId: process.env.INFURA_KEY,
     },
   },
+  walletconnect: {
+    package: WalletConnect,
+    options: {
+      infuraId: process.env.INFURA_KEY,
+    },
+  },
 };
+
+// const web3Modal = new Web3Modal({
+//   providerOptions, // required
+// });
 
 export default function Home() {
   // walletConnected keep track of whether the user's wallet is connected or not
@@ -31,11 +42,10 @@ export default function Home() {
   // // Amount of ETH that the admin purchases
   const [purchaseAmount, setPurchaseAmount] = useState("");
 
-  const web3ModalRef = useRef();
-
-  // const web3Modal = new Web3Modal({
-  //   providerOptions, // required
-  // });
+  // const web3ModalRef = useRef();
+  const web3Modal = new Web3Modal({
+    providerOptions, // required
+  });
 
   useEffect(() => {
     web3ModalRef.current = new Web3Modal({
@@ -50,9 +60,10 @@ export default function Home() {
    */
   const connectWallet = async () => {
     try {
-      // const provider = await web3Modal.connect();
-      // const library = new ethers.providers.Web3Provider(provider);
-      await getProviderOrSigner();
+      const provider = await web3Modal.connect();
+      const library = new ethers.providers.Web3Provider(provider);
+      // await getProviderOrSigner();
+      setProvider(provider);
       setWalletConnected(true);
       setLibrary(library);
     } catch (error) {
